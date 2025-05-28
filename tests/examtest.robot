@@ -1,62 +1,21 @@
 *** Settings ***
 Library    SeleniumLibrary
 
-*** Variables ***
-${URL}      https://www.saucedemo.com
-${BROWSER}  firefox
+*** Keywords ***
+Login To OrangeHRM
+    # เพิ่ม options สำหรับ headless mode และอื่นๆ ที่จำเป็น
+    # '--no-sandbox' จำเป็นมากสำหรับ Docker/CI environments
+    ${chrome_options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
+    Call Method    ${chrome_options}    add_argument    --headless=new # Headless mode (สำหรับ Chrome 94+)
+    Call Method    ${chrome_options}    add_argument    --no-sandbox # สำคัญมากสำหรับ CI/CD
+    Call Method    ${chrome_options}    add_argument    --disable-dev-shm-usage # ช่วยเรื่อง memory ใน Docker/CI
+    Call Method    ${chrome_options}    add_argument    --disable-gpu # ป้องกันปัญหาบางอย่างเกี่ยวกับ GPU
+    Call Method    ${chrome_options}    add_argument    --window-size=1920,1080 # กำหนดขนาดหน้าจอเสมือน
 
-
-*** Test Cases ***
-
-Login ด้วยข้อมูลถูกต้อง
-    Open Browser    ${URL}    ${BROWSER}
-    Input Text    id:user-name    standard_user
-    Input Text    id:password     secret_sauce
-    Click Button  id:login-button
-    Click Button  id:add-to-cart-sauce-labs-bike-light
-    Click Element  class:shopping_cart_link
-    Click Button   id:checkout
-    Input Text     id:first-name     puwanart
-    Input Text     id:last-name     jearat
-    Input Text     id:postal-code   EXEE0012
-    Click Button   id:continue
-    Click Button   id:finish
-    Page Should Contain    Thank you for your order!
-    Close Browser
-ไม่ใส่ชื่อ
-    Open Browser    ${URL}    ${BROWSER}
-    Input Text    id:user-name    standard_user
-    Input Text    id:password     secret_sauce
-    Click Button  id:login-button
-    Click Button  id:add-to-cart-sauce-labs-bike-light
-    Click Element  class:shopping_cart_link
-    Click Button   id:checkout
-    Click Button   id:continue
-    Page Should Contain    Error: First Name is required
-    Close Browser
-ไม่ใส่ last name
-    Open Browser    ${URL}    ${BROWSER}
-    Input Text    id:user-name    standard_user
-    Input Text    id:password     secret_sauce
-    Click Button  id:login-button
-    Click Button  id:add-to-cart-sauce-labs-bike-light
-    Click Element  class:shopping_cart_link
-    Click Button   id:checkout
-    Input Text     id:first-name     puwanart
-    Input Text     id:postal-code   EXEE0012
-    Click Button   id:continue
-    Page Should Contain    Error: Last Name is required
-    Close Browser
-ไม่ใส่Postal Code
-    Open Browser    ${URL}    ${BROWSER}
-    Input Text    id:user-name    standard_user
-    Input Text    id:password     secret_sauce
-    Click Button  id:login-button
-    Click Button  id:add-to-cart-sauce-labs-bike-light
-    Click Element  class:shopping_cart_link
-    Click Button   id:checkout
-    Input Text     id:first-name     puwanart
-    Input Text     id:last-name     jearat
-    Click Button   id:continue
-    Page Should Contain    Error: Postal Code is required
-    Close Browser
+    Open Browser    ${BASE_URL}    chrome    options=${chrome_options}
+    # Maximize Browser Window # ไม่จำเป็นถ้าตั้ง window-size และเป็น headless
+    Wait Until Page Contains Element    xpath=//input[@name='username']    timeout=10s
+    Input Text    xpath=//input[@name='username']    ${USERNAME}
+    Input Text    xpath=//input[@name='password']    ${PASSWORD}
+    Click Button    xpath=//button[@type='submit']
+    Wait Until Page Contains    Dashboard    timeout=15s
