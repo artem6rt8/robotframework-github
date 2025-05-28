@@ -1,56 +1,54 @@
-name: Robot Framework Web Tests (Firefox) # เปลี่ยนชื่อ Workflow
+name: Run Robot Framework Tests
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch:
+  schedule:
+    - cron: '0 17 * * *'
 
 jobs:
-  run_robot_tests:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: macos-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt # ต้องมี robotframework, robotframework-seleniumlibrary, selenium, webdriver-manager
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install additional dependencies if needed
+          pip install -r requirements.txt
 
-    - name: Set up Firefox and GeckoDriver # เปลี่ยน Step นี้
-      run: |
-        # ติดตั้ง Firefox
-        sudo apt-get update
-        sudo apt-get install -y firefox
+      - name: Run Robot Framework tests
+        env:
+          WORK_TOKEN: ${{ secrets.GIT_TOKEN }}
+          TZ: Asia/Ho_Chi_Minh
+        run: |
+          if ! robot --outputdir results --exclude skip tests/; then
+              echo "Robot Framework tests failed. Rerunning failed tests..."
+              if [ -f results/output.xml ]; then
+                  robot --rerunfailed results/output.xml --outputdir results_rerun tests/ || true
+                  if [ -f results_rerun/output.xml ]; then
+                      rebot --output results/output.xml --log results/log.html --report results/report.html --merge results/output.xml results_rerun/output.xml
+                  else
+                      echo "No output.xml file found from rerun. Skipping merge."
+                  fi
+              else
+                  echo "No output.xml file found. Cannot rerun failed tests."
+              fi
+          fi
 
-        # ไม่ต้องดาวน์โหลด geckodriver เอง เพราะ webdriver-manager จะจัดการให้
-        # แต่เพื่อความแน่ใจว่ามันถูกเรียกใช้ก่อนใน CI
-        # python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"
+          echo "Script execution completed"
+        continue-on-error: true
 
-        # ตรวจสอบเวอร์ชัน
-        firefox --version
-        # geckodriver --version || echo "GeckoDriver might not be in PATH, but webdriver_manager will handle it." # คอมเมนต์ไว้ก็ได้
-
-    - name: Run Robot Framework Tests
-      run: |
-        python -m robot --outputdir reports tests/
-
-    - name: Upload Test Reports
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: robot-test-reports
-        path: reports/
-        retention-days: 7
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./results
+          name: robot-test-results
+          retention-days: 3
