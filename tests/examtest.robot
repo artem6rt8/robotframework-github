@@ -1,22 +1,62 @@
 *** Settings ***
-Library    SeleniumLibrary    
-Resource   ../resources/variables.robot 
-Resource   ../resources/keywords.robot  
+Library    SeleniumLibrary
+
+*** Variables ***
+${URL}      https://www.saucedemo.com
+${BROWSER}  firefox
+
 
 *** Test Cases ***
-Add New Employee
-    [Documentation]    ทดสอบการ login และเพิ่มพนักงานใหม่
-    Login To OrangeHRM
 
-    Click Element    xpath=//span[text()='PIM']
-    Sleep    5s
-    Click Element    xpath=//button[contains(@class, 'oxd-button--secondary') and contains(., 'Add')]
-    Wait Until Page Contains Element    xpath=//h6[text()='Add Employee']
-
-    Input Text    name=firstName    John
-    Input Text    name=lastName     Doe
-    Sleep    4s
-    Click Element    xpath=//button[contains(@class,'oxd-button oxd-button--medium oxd-button--secondary')and contains(., 'Save')]
-    Sleep    5s
-    Page Should Contain    Personal Details
+Login ด้วยข้อมูลถูกต้อง
+    Open Browser    ${URL}    ${BROWSER}
+    Input Text    id:user-name    standard_user
+    Input Text    id:password     secret_sauce
+    Click Button  id:login-button
+    Click Button  id:add-to-cart-sauce-labs-bike-light
+    Click Element  class:shopping_cart_link
+    Click Button   id:checkout
+    Input Text     id:first-name     puwanart
+    Input Text     id:last-name     jearat
+    Input Text     id:postal-code   EXEE0012
+    Click Button   id:continue
+    Click Button   id:finish
+    Page Should Contain    Thank you for your order!
+    Close Browser
+ไม่ใส่ชื่อ
+    Open Browser    ${URL}    ${BROWSER}
+    Input Text    id:user-name    standard_user
+    Input Text    id:password     secret_sauce
+    Click Button  id:login-button
+    Click Button  id:add-to-cart-sauce-labs-bike-light
+    Click Element  class:shopping_cart_link
+    Click Button   id:checkout
+    Click Button   id:continue
+    Page Should Contain    Error: First Name is required
+    Close Browser
+ไม่ใส่ last name
+    Open Browser    ${URL}    ${BROWSER}
+    Input Text    id:user-name    standard_user
+    Input Text    id:password     secret_sauce
+    Click Button  id:login-button
+    Click Button  id:add-to-cart-sauce-labs-bike-light
+    Click Element  class:shopping_cart_link
+    Click Button   id:checkout
+    Input Text     id:first-name     puwanart
+    Input Text     id:postal-code   EXEE0012
+    Click Button   id:continue
+    Page Should Contain    Error: Last Name is required
+    Close Browser
+ไม่ใส่Postal Code
+    Open Browser    ${URL}    ${BROWSER}
+    Input Text    id:user-name    standard_user
+    Input Text    id:password     secret_sauce
+    Click Button  id:login-button
+    Click Button  id:add-to-cart-sauce-labs-bike-light
+    Click Element  class:shopping_cart_link
+    Click Button   id:checkout
+    Input Text     id:first-name     puwanart
+    Input Text     id:last-name     jearat
+    Click Button   id:continue
+    Page Should Contain    Error: Postal Code is required
     Close Browser
