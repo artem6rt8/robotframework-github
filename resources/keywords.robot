@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    OperatingSystem # <<< เพิ่มบรรทัดนี้
+Library    variables.robot
 
 *** Keywords ***
 Login To OrangeHRM
