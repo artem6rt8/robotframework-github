@@ -1,14 +1,15 @@
 *** Settings ***
-Library    SeleniumLibrary
-Resource   ../resources/variables.robot
+Library    Browser    # ใช้ Browser Library
 
 *** Test Cases ***
-Login With Valid Credentials
-    Open Browser    ${URL}    ${BROWSER}
-    Sleep    5s
-    Input Text    name=username    ${USERNAME}
-    Input Text    name=password    ${PASSWORD}
-    Click Button    xpath=//button[@type='submit']
-    Wait Until Page Contains Element    xpath=//h6[text()='Dashboard']
-    Page Should Contain    Dashboard
+Verify Google Search Page Title
+    [Documentation]    Opens Google and verifies the page title.
+    New Page    https://www.google.com
+    Get Title    ==    Google
+    Close Browser
+
+Verify DuckDuckGo Search Page Title
+    [Documentation]    Opens DuckDuckGo and verifies the page title.
+    New Page    https://duckduckgo.com/
+    Get Title    ==    DuckDuckGo
     Close Browser
