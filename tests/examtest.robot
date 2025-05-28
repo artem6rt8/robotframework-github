@@ -1,15 +1,22 @@
 *** Settings ***
-Library    Browser    # ใช้ Browser Library
+Library    SeleniumLibrary
+Resource   ../resources/variables.robot
+Resource   ../resources/keywords.robot
 
 *** Test Cases ***
-Verify Google Search Page Title
-    [Documentation]    Opens Google and verifies the page title.
-    New Page    https://www.google.com
-    Get Title    ==    Google
-    Close Browser
+Add New Employee
+    [Documentation]    ทดสอบการ login และเพิ่มพนักงานใหม่
+    Login To OrangeHRM
 
-Verify DuckDuckGo Search Page Title
-    [Documentation]    Opens DuckDuckGo and verifies the page title.
-    New Page    https://duckduckgo.com/
-    Get Title    ==    DuckDuckGo
+    Click Element    xpath=//span[text()='PIM']
+    Sleep    5s
+    Click Element    xpath=//button[contains(@class, 'oxd-button--secondary') and contains(., 'Add')]
+    Wait Until Page Contains Element    xpath=//h6[text()='Add Employee']
+
+    Input Text    name=firstName    John
+    Input Text    name=lastName     Doe
+    Sleep  4s
+    Click Element    xpath=//button[contains(@class,'oxd-button oxd-button--medium oxd-button--secondary')and contains(., 'Save')]
+    Sleep  5s
+    Page Should Contain    Personal Details 
     Close Browser
