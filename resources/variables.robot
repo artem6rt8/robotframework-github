@@ -1,5 +1,5 @@
 *** Variables ***
 ${URL}       https://opensource-demo.orangehrmlive.com
-${BROWSER}   chrome
+${BROWSER}   firefox
 ${USERNAME}  Admin
 ${PASSWORD}  admin123
