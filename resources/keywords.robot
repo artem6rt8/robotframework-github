@@ -1,6 +1,7 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    variables
+Library    OperatingSystem
+Resource   variables.robot
 
 *** Keywords ***
 Login To OrangeHRM
