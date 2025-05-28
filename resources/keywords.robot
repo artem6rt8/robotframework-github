@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Library    variables.robot
+Library    variables
 
 *** Keywords ***
 Login To OrangeHRM
