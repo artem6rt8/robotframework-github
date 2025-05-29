@@ -8,7 +8,7 @@ ${BROWSER}  firefox
 
 *** Test Cases ***
 
-Login ด้วยข้อมูลถูกต้อง
+Order สินค้าและสั่ง
     Open Browser    ${URL}    ${BROWSER}
     Input Text    id:user-name    standard_user
     Input Text    id:password     secret_sauce
@@ -23,7 +23,7 @@ Login ด้วยข้อมูลถูกต้อง
     Click Button   id:finish
     Page Should Contain    Thank you for your order!
     Close Browser
-ไม่ใส่ชื่อ
+Order สินค้าและสั่งไม่ใส่ชื่อ
     Open Browser    ${URL}    ${BROWSER}
     Input Text    id:user-name    standard_user
     Input Text    id:password     secret_sauce
@@ -34,7 +34,7 @@ Login ด้วยข้อมูลถูกต้อง
     Click Button   id:continue
     Page Should Contain    Error: First Name is required
     Close Browser
-ไม่ใส่ last name
+Order สินค้าและสั่งไม่ใส่ last name
     Open Browser    ${URL}    ${BROWSER}
     Input Text    id:user-name    standard_user
     Input Text    id:password     secret_sauce
@@ -47,7 +47,7 @@ Login ด้วยข้อมูลถูกต้อง
     Click Button   id:continue
     Page Should Contain    Error: Last Name is required
     Close Browser
-ไม่ใส่Postal Code
+Order สินค้าและสั่งไม่ใส่Postal Code
     Open Browser    ${URL}    ${BROWSER}
     Input Text    id:user-name    standard_user
     Input Text    id:password     secret_sauce
